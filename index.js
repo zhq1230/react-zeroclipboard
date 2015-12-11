@@ -1,6 +1,6 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var loadScript = require('./loadScript');
+var loadScript = require('load-script');
 var ZeroClipboard, client;
 
 // callbacks waiting for ZeroClipboard to load
@@ -42,19 +42,16 @@ var readyEventHasHappened = false;
 // asynchronusly load ZeroClipboard from cdnjs
 // it should automatically discover the SWF location using some clever hacks :-)
 var handleZeroClipLoad = function(error){
-    if (error) {
-        console.error("Couldn't load zeroclipboard from CDNJS.  Copy will not work.  "
-            + "Check your Content-Security-Policy.");
-        console.error(error);
-    }
+    // uncommented for ie8 fix
+    // if (error) {
+    //     console.error("Couldn't load zeroclipboard from CDNJS.  Copy will not work.  "
+    //         + "Check your Content-Security-Policy.");
+    //     console.error(error);
+    // }
 
     // grab it and free up the global
     ZeroClipboard = global.ZeroClipboard;
-    delete global.ZeroClipboard;
-
-    ZeroClipboard.config({
-      swfPath: '//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf'
-    });
+    //delete global.ZeroClipboard; // uncommented for ie8 fix
 
     client = new ZeroClipboard();
 
@@ -70,7 +67,12 @@ var handleZeroClipLoad = function(error){
                 return;
             }
 
-            var activeElement = ZeroClipboard.activeElement();
+            // ie8 fix
+            // var activeElement = ZeroClipboard.activeElement();
+            var activeElement = client.elements();
+            if (activeElement && activeElement.length > 0) {
+                activeElement = activeElement[0];
+            }
 
             // find an event handler for this element
             // we use some so we don't continue looking after a match is found
@@ -96,7 +98,7 @@ var handleZeroClipLoad = function(error){
 };
 
 var findOrLoadWasCalled = false;
-function findOrLoadZeroClipboard(){
+function findOrLoadZeroClipboard(opts){
     if (findOrLoadWasCalled) return;
     findOrLoadWasCalled = true;
 
@@ -107,6 +109,9 @@ function findOrLoadZeroClipboard(){
         // load zeroclipboard from CDN
         // in production we want the minified version
         var ZERO_CLIPBOARD_SOURCE = '//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard';
+        if (opts && opts.scriptSrc) {
+            ZERO_CLIPBOARD_SOURCE = opts.scriptSrc;
+        }
         loadScript(process.env.NODE_ENV === 'production' ? ZERO_CLIPBOARD_SOURCE + '.min.js' : ZERO_CLIPBOARD_SOURCE + '.js', handleZeroClipLoad);
     }
 }
@@ -127,7 +132,7 @@ function findOrLoadZeroClipboard(){
 // />
 var ReactZeroClipboard = React.createClass({
     ready: function(cb){
-        findOrLoadZeroClipboard();
+        findOrLoadZeroClipboard({scriptSrc: this.props.scriptSrc});
 
         if (client) {
             // nextTick guarentees asynchronus execution

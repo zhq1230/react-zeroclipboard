@@ -1,30 +1,29 @@
 {
-  "name": "react-zeroclipboard",
-  "version": "3.0.0",
-  "description": "react component for zeroclipboard",
+  "name": "react-zeroclipboard-ie8",
+  "version": "3.0.1",
+  "description": "react component for zeroclipboard with ie8 support",
   "main": "index.js",
   "keywords": [
     "react",
     "clipboard",
-    "react-component"
+    "react-component",
+    "ie8"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "docs": "npm run browserify",
     "browserify": "browserify -d -t babelify docs.js -o docs-bundle.js"
   },
-  "repository": "https://github.com/brigand/react-zeroclipboard.git",
-  "homepage": "http://brigand.github.io/react-zeroclipboard/",
-  "author": "Frankie Bagnardi <f.bagnardi@gmail.com>",
+  "repository": "https://github.com/zhq1230/react-zeroclipboard.git",
+  "homepage": "https://github.com/zhq1230/react-zeroclipboard",
+  "author": "zhq1230",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.0.12",
     "babel-preset-react": "^6.0.12",
     "babelify": "^7.0.2",
     "browserify": "^9.0.8",
-    "envify": "^3.4.0",
-    "react": "^0.14.0",
-    "react-dom": "^0.14.0"
+    "envify": "^3.4.0"
   },
   "browserify": {
     "transform": [
@@ -32,6 +31,10 @@
     ]
   },
   "dependencies": {
-    "envify": "^3"
+    "load-script": "^1.0.0"
+  },
+  "peerDependencies": {
+    "react": "^0.14.0",
+    "react-dom": "^0.14.0"
   }
 }
